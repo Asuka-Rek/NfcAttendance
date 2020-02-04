@@ -59,9 +59,10 @@ def addShuttaikin(workerName, attendance):
     dataNow = datetime.datetime.now(tz=timezone('Asia/Tokyo'))
     datestr = f'{dataNow.year}/{dataNow.month:02d}/{dataNow.day:02d}'
     timestr = f'{dataNow.hour:02d}:{dataNow.minute:02d}'
-    print(f'{workerName}さんですね。{datestr} {timestr}に{attendance}を登録します。')
+
     
     sheetTitle = createNewSheet(year=dataNow.year, month=dataNow.month)
     sheet2Add = gc.open(fileName).worksheet(sheetTitle)
     sheet2Add.append_row(values=[datestr, workerName, timestr, attendance])
 
+    return datestr, timestr

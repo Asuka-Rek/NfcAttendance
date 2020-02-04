@@ -43,28 +43,3 @@ def addNfc(newCardHolder):
     outputJson(authInfo=authInfo)
     print('登録が完了しました。')
 
-
-def shuttaikin():
-    authInfo = importJson()
-    print('出勤なら[1],退勤なら[2]を入力してください。')
-    inputNum = input()
-    if inputNum == '1' or inputNum == '2':
-        attendance = ['出勤', '退勤'][inputNum == '2']
-        cardID = fe.inputCard()
-        if cardID == None:
-            print('対応していないカードです。')
-            return
-        if not cardID in authInfo:
-            print('登録されていないカードです。別のカードを試してください。')
-            return
-        
-        # ログ出力
-        #Gスプレッドシート出力
-        gsUpdate.addShuttaikin(authInfo[cardID], attendance)
-        print('登録が完了しました。')
-    else:
-        print('値エラー。予期せぬ値です。')
-        return
-
-
-shuttaikin()
