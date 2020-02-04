@@ -8,8 +8,6 @@ class MyCardReader(object):
             self.idm = binascii.hexlify(tag.target.sensf_res).decode('UTF-8')
         except:
             self.idm = None
-        else:
-            print('読み取り完了。カードを離してください。')
         return True
 
     def read_id(self):
