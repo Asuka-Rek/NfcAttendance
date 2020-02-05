@@ -21,8 +21,8 @@ def searchSheet(searchTitle):
 
     Return
     ----------
-    シートがあるとき：True
-    シートがないとき：False
+    True  : シートがあるとき
+    False : シートがないとき
     """
     sheetfile = gc.open(fileName)
     for i in sheetfile.worksheets(): # シートが既存かどうかの判定
@@ -31,6 +31,20 @@ def searchSheet(searchTitle):
     return False
 
 def createNewSheet(year, month):
+    """スプレッドシートにシート「{year}_{month}」が存在するか調べ、無いときは追加する。
+    
+    Parameters
+    ----------
+    year : int
+        追加するシートの年
+    month : [type]
+        追加するシートの月
+    
+    Returns
+    -------
+    newTitle : str
+        追加または存在確認したシートのタイトル
+    """
     year = int(year)
     month = int(month)
     sheetfile = gc.open(fileName)

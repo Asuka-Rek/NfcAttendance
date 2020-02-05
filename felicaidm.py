@@ -14,7 +14,7 @@ class MyCardReader(object):
         clf = nfc.ContactlessFrontend('usb')
 
         self.idm = None
-        # clf.connectのterminate用
+        # clf.connectのterminate用（前後2行）
         # これがないとカードのタッチ後、離すまで次の処理が始まらない。
         forKill = lambda: self.idm is not None 
 
