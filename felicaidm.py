@@ -27,4 +27,6 @@ class MyCardReader(object):
 def inputCard():
     cr = MyCardReader()
     cr.read_id()
+    if cr.idm == None:
+        return None
     return hashlib.sha224(cr.idｍ.encode()).hexdigest()
