@@ -1,4 +1,4 @@
-import binascii
+import binascii, hashlib
 import nfc
 
 class MyCardReader(object):
@@ -27,4 +27,4 @@ class MyCardReader(object):
 def inputCard():
     cr = MyCardReader()
     cr.read_id()
-    return cr.idｍ
+    return hashlib.sha224(cr.idｍ.encode()).hexdigest()
