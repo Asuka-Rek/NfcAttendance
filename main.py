@@ -1,10 +1,10 @@
+from time import sleep
+import sys, platform, threading
 import tkinter as tk
+# ↓自作モジュール
+import gsUpdate
 import felicaidm as fe
 import nfcWithJson as nfJ
-from time import sleep
-import threading
-import  gsUpdate
-import sys
 
 class Application(tk.Frame):
     def __init__(self, master=None):
