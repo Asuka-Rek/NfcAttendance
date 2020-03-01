@@ -51,7 +51,7 @@ class Application(tk.Frame):
 
     def openMessageDialog(self, displayText):
         self.openDialog()
-        self.dialog.overrideredirect(True)
+        overrider(self.dialog)
         self.textLabel = tk.Label(self.dialog, text=displayText)
         self.textLabel.pack(expand=1, fill="both", padx="30", pady="10")
         self.closeButton = tk.Button(self.dialog, text="キャンセル", command=self.destroyDialog)
@@ -76,15 +76,29 @@ class Application(tk.Frame):
         self.openMessageDialog(f"{name}さんの{select}を{date}{time}に登録しました。")
     
 
+def osIdentifier():
+    osName = platform.system()
+    if osName in ['Windows', 'Darwin', 'Linux']:
+        return osName
+
+def overrider(winObj):
+    winObj.overrideredirect(True)
+    if osIdentifier() == 'Darwin':
+        """
+        Darwinの場合のみ
+        overrideredirect(True)に続けて
+        overrideredirect(False)を実行しないと
+        ウィンドウのベゼルが消えない。
+        """
+        winObj.overrideredirect(False)
 
 root = tk.Tk()
 root.title('勤怠管理システム')
 
 root.state('zoomed')
-# Linux系のときは↓
-# root.attributes("-zoomed", "1")
+overrider(root)
 
-root.overrideredirect(True)
+#root.overrideredirect(True)
 
 app = Application(master=root)
 app.mainloop()
