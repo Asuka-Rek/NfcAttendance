@@ -46,7 +46,7 @@ class Application(tk.Frame):
     def openDialog(self):
         self.dialog = tk.Toplevel(self)
         self.dialog.title("勤怠管理システム")
-        self.dialog.state("zoomed")
+        zoomer(self.dialog)
         self.dialog.grab_set_global()
 
     def openMessageDialog(self, displayText):
@@ -80,25 +80,34 @@ def osIdentifier():
     osName = platform.system()
     if osName in ['Windows', 'Darwin', 'Linux']:
         return osName
+    else:
+        return None
 
 def overrider(winObj):
-    winObj.overrideredirect(True)
-    if osIdentifier() == 'Darwin':
-        """
-        Darwinの場合のみ
-        overrideredirect(True)に続けて
-        overrideredirect(False)を実行しないと
-        ウィンドウのベゼルが消えない。
-        """
-        winObj.overrideredirect(False)
+    osName = osIdentifier()
+    if osName in ['Linux', 'Darwin']:
+        return
+    else:
+        winObj.overrideredirect(True)
+
+
+def zoomer(winObj):
+    """
+    OSごとの処理の違いを吸収して画面をフルスクリーン化する
+    """
+    osName = osIdentifier()
+    if osName in ['Linux', 'Darwin']:
+        winObj.attributes('-fullscreen', True)
+    elif osName == 'Windows':
+        winObj.state('zoomed')
+        overrider(winObj=winObj)
+        return
+
 
 root = tk.Tk()
 root.title('勤怠管理システム')
 
-root.state('zoomed')
-overrider(root)
-
-#root.overrideredirect(True)
+zoomer(root)
 
 app = Application(master=root)
 app.mainloop()
