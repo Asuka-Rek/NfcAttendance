@@ -47,7 +47,7 @@ class Application(tk.Frame):
         self.dialog = tk.Toplevel(self)
         self.dialog.title("勤怠管理システム")
         zoomer(self.dialog)
-        self.dialog.grab_set_global()
+        self.dialog.grab_set()
 
     def openMessageDialog(self, displayText):
         self.openDialog()
