@@ -60,7 +60,7 @@ class Application(tk.Frame):
 
         
     def openSelectDialog(self, displayText, name, authInfo):
-        self.openMessageDialog(displayText)
+        self.openMessageDialog(displayText=displayText, buttonText="キャンセル")
         self.AttendButton = tk.Button(self.dialog, text="出勤", command=lambda: self.shukkin(name, "出勤", authInfo=authInfo))
         self.AbsentButton = tk.Button(self.dialog, text="退勤", command=lambda: self.shukkin(name, "退勤", authInfo=authInfo))
         self.AttendButton.pack(expand=1, fill="both", padx="30", pady="10")
