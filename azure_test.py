@@ -1,7 +1,5 @@
 import requests
 import json
-import inspect
-import felicaidm as fe
 
 def init_request(command_name):
     with open('azure_endpoint.json') as az_json:
@@ -9,8 +7,17 @@ def init_request(command_name):
     headers = {"content-type":"application/json"}
     return url, headers
 
-def shukkin(attendance, date_attend):
-    crew_data = resolve_crew()
+def shukkin(attendance, date_attend, crew_data):
+    """
+    出退勤をAzure上のDBに登録するHTTPリクエストを行う。
+    
+    Parameters
+    ----------
+    attendance : str(len <= 2)
+        出勤/退勤
+    date_attend : str(smalldatetime : YYYY-MM-DD HH:MM)
+    crew_data : dict{id:int, name:str}
+    """
     payload = {
         "attend":attendance,
         "crew_id":crew_data["id"],
@@ -23,13 +30,12 @@ def shukkin(attendance, date_attend):
     print(r)
     print(r.text)
 
-def add_crew(name, birthday, tourokubi):
-    digest = fe.inputCard()
+def add_crew(name, birthday, tourokubi, card_hash):
     payload = {
     "name":name,
     "birthday":birthday,
     "tourokubi":tourokubi,
-    "card_hash":digest
+    "card_hash":card_hash
     }
     url, headers = init_request("add_crew")
     print("adding new crew...")
@@ -37,10 +43,9 @@ def add_crew(name, birthday, tourokubi):
     print(r)
     print(payload)
 
-def resolve_crew():
-    digest = fe.inputCard()
+def resolve_crew(card_hash):
     payload = {
-    "card_hash":digest
+    "card_hash":card_hash
     }
     url, headers = init_request("resolve_name")
     print("resolving crew name...")
