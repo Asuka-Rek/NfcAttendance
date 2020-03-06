@@ -30,13 +30,13 @@ class Application(tk.Frame):
         cardID = fe.inputCard()
         if cardID == None:
             displayText = "対応していないカードです。"
-            self.openMessageDialog(displayText)
+            self.openMessageDialog(displayText, buttonText="閉じる")
             return
 
         authInfo = nfJ.importJson()
         if not cardID in authInfo:
             displayText = "登録されていないカードです。別のカードを試してください。"
-            self.openMessageDialog(displayText)
+            self.openMessageDialog(displayText, buttonText="閉じる")
         else:
             name = authInfo[cardID]
             displayText = f"{name}さん。出退勤を選んでください。"
@@ -45,16 +45,16 @@ class Application(tk.Frame):
 
     def openDialog(self):
         self.dialog = tk.Toplevel(self)
-        self.dialog.title("勤怠管理システム")
+        self.dialog.title("勤怠管理dialog")
         zoomer(self.dialog)
         self.dialog.grab_set()
 
-    def openMessageDialog(self, displayText):
+    def openMessageDialog(self, displayText, buttonText):
         self.openDialog()
         overrider(self.dialog)
         self.textLabel = tk.Label(self.dialog, text=displayText)
         self.textLabel.pack(expand=1, fill="both", padx="30", pady="10")
-        self.closeButton = tk.Button(self.dialog, text="キャンセル", command=self.destroyDialog)
+        self.closeButton = tk.Button(self.dialog, text=buttonText, command=self.destroyDialog)
         self.closeButton.pack(expand=1, fill="both", padx="30", pady="10")
 
         
@@ -71,9 +71,10 @@ class Application(tk.Frame):
         self.master.grab_set_global()
 
     def shukkin(self, name, select):
-        date, time = gsUpdate.addShuttaikin(name, select)
+        date, time = gsUpdate.addShuttaikin(workerName=name, attendance=select)
+        displayText = f"{name}さんの{select}を{date}{time}に登録しました。"
         self.dialog.destroy()
-        self.openMessageDialog(f"{name}さんの{select}を{date}{time}に登録しました。")
+        self.openMessageDialog(displayText=displayText, buttonText="閉じる")
     
 
 def osIdentifier():
