@@ -74,7 +74,7 @@ class Application(tk.Frame):
     def shukkin(self, name, select, authInfo):
         date, time = gsUpdate.addShuttaikin(workerName=name, attendance=select)
         azsql.shukkin(attendance=select, date_attend=f"{date} {time}", crew_data=authInfo)
-        displayText = f"{name}さんの{select}を{date}{time}に登録しました。"
+        displayText = f"{name}さんの{select}を{date} {time}に登録しました。"
         self.dialog.destroy()
         self.openMessageDialog(displayText=displayText, buttonText="閉じる")
     
