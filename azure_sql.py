@@ -57,5 +57,3 @@ def resolve_crew(card_hash):
         return 400, None
     else:
         return crew_data
-
-resolve_crew("aaadadajakdiai")
