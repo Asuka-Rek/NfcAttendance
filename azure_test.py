@@ -23,12 +23,12 @@ def shukkin(attendance, date_attend):
     print(r)
     print(r.text)
 
-def add_crew():
+def add_crew(name, birthday, tourokubi):
     digest = fe.inputCard()
     payload = {
-    "name":"bigcamera",
-    "birthday":"1998-03-26",
-    "tourokubi":"2020-03-05",
+    "name":name,
+    "birthday":birthday,
+    "tourokubi":tourokubi,
     "card_hash":digest
     }
     url, headers = init_request("add_crew")
