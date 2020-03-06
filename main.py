@@ -5,6 +5,7 @@ import tkinter as tk
 import gsUpdate
 import felicaidm as fe
 import nfcWithJson as nfJ
+import azure_sql as azsql
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -30,17 +31,17 @@ class Application(tk.Frame):
         cardID = fe.inputCard()
         if cardID == None:
             displayText = "対応していないカードです。"
-            self.openMessageDialog(displayText, buttonText="閉じる")
+            self.openMessageDialog(displayText=displayText, buttonText="閉じる")
             return
 
-        authInfo = nfJ.importJson()
-        if not cardID in authInfo:
+        authInfo = azsql.resolve_crew(card_hash=cardID)
+        if authInfo is None:
             displayText = "登録されていないカードです。別のカードを試してください。"
-            self.openMessageDialog(displayText, buttonText="閉じる")
+            self.openMessageDialog(displayText=displayText, buttonText="閉じる")
         else:
-            name = authInfo[cardID]
+            name = authInfo["name"]
             displayText = f"{name}さん。出退勤を選んでください。"
-            self.openSelectDialog(displayText, name)
+            self.openSelectDialog(displayText=displayText, name=name, authInfo=authInfo)
         
 
     def openDialog(self):
@@ -58,10 +59,10 @@ class Application(tk.Frame):
         self.closeButton.pack(expand=1, fill="both", padx="30", pady="10")
 
         
-    def openSelectDialog(self, displayText, name):
+    def openSelectDialog(self, displayText, name, authInfo):
         self.openMessageDialog(displayText)
-        self.AttendButton = tk.Button(self.dialog, text="出勤", command=lambda: self.shukkin(name, "出勤"))
-        self.AbsentButton = tk.Button(self.dialog, text="退勤", command=lambda: self.shukkin(name, "退勤"))
+        self.AttendButton = tk.Button(self.dialog, text="出勤", command=lambda: self.shukkin(name, "出勤", authInfo=authInfo))
+        self.AbsentButton = tk.Button(self.dialog, text="退勤", command=lambda: self.shukkin(name, "退勤", authInfo=authInfo))
         self.AttendButton.pack(expand=1, fill="both", padx="30", pady="10")
         self.AbsentButton.pack(expand=1, fill="both", padx="30", pady="10")
 
@@ -70,8 +71,9 @@ class Application(tk.Frame):
         self.startReadNfc()
         self.master.grab_set_global()
 
-    def shukkin(self, name, select):
+    def shukkin(self, name, select, authInfo):
         date, time = gsUpdate.addShuttaikin(workerName=name, attendance=select)
+        azsql.shukkin(attendance=select, date_attend=f"{date} {time}", crew_data=authInfo)
         displayText = f"{name}さんの{select}を{date}{time}に登録しました。"
         self.dialog.destroy()
         self.openMessageDialog(displayText=displayText, buttonText="閉じる")

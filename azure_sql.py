@@ -51,6 +51,11 @@ def resolve_crew(card_hash):
     print("resolving crew name...")
     r = requests.post(url, data=json.dumps(payload), headers=headers)
     print(r)
-    crew_data = r.json()["ResultSets"]['Table1'][0]
-    print(crew_data)
-    return crew_data
+    try:
+        crew_data = r.json()["ResultSets"]['Table1'][0]
+    except KeyError:
+        return 400, None
+    else:
+        return crew_data
+
+resolve_crew("aaadadajakdiai")
