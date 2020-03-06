@@ -54,6 +54,6 @@ def resolve_crew(card_hash):
     try:
         crew_data = r.json()["ResultSets"]['Table1'][0]
     except KeyError:
-        return 400, None
+        return None
     else:
         return crew_data
