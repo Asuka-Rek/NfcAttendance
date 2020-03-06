@@ -71,7 +71,7 @@ def addShuttaikin(workerName, attendance):
         '出勤'または'退勤'
     """
     dataNow = datetime.datetime.now(tz=timezone('Asia/Tokyo'))
-    datestr = f'{dataNow.year}/{dataNow.month:02d}/{dataNow.day:02d}'
+    datestr = f'{dataNow.year}-{dataNow.month:02d}-{dataNow.day:02d}'
     timestr = f'{dataNow.hour:02d}:{dataNow.minute:02d}'
 
     
