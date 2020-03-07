@@ -18,9 +18,7 @@ class Application(tk.Frame):
         
     def create_widgets(self):
         self.textLabel = tk.Label(text="カードをタッチしてください。")
-        self.exitSystemButton = tk.Button(text="Exit", command=sys.exit)
         self.textLabel.pack(side="top", expand=1)
-        self.exitSystemButton.pack()
         self.startReadNfc()
 
     def startReadNfc(self):
@@ -42,7 +40,8 @@ class Application(tk.Frame):
             self.openMessageDialog(displayText=displayText, buttonText="閉じる")
         else:
             name = authInfo["name"]
-            displayText = f"{name}さん。出退勤を選んでください。"
+            adminOrNot = authInfo["admin"]
+            displayText = f"{name}さん。{['出退勤','動作'][adminOrNot==1]}を選んでください。"
             self.openSelectDialog(displayText=displayText, name=name, authInfo=authInfo)
         
 
@@ -67,6 +66,9 @@ class Application(tk.Frame):
         self.AbsentButton = tk.Button(self.dialog, text="退勤", command=lambda: self.shukkin(name, "退勤", authInfo=authInfo))
         self.AttendButton.pack(expand=1, fill="both", padx="30", pady="10")
         self.AbsentButton.pack(expand=1, fill="both", padx="30", pady="10")
+        if authInfo["admin"] == 1:
+            self.finishButton = tk.Button(self.dialog, text="プログラム終了", command=sys.exit)
+            self.finishButton.pack(expand=1, fill="both", padx="30", pady="10")
 
     def destroyDialog(self):
         self.dialog.destroy()
