@@ -1,10 +1,12 @@
 from time import sleep
 import sys, platform, threading
 import tkinter as tk
-# ↓自作モジュール
+import datetime
+from pytz import timezone
+# private modules
 import gsUpdate
 import felicaidm as fe
-import nfcWithJson as nfJ
+import azure_sql as azsql
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -15,9 +17,7 @@ class Application(tk.Frame):
         
     def create_widgets(self):
         self.textLabel = tk.Label(text="カードをタッチしてください。")
-        self.exitSystemButton = tk.Button(text="Exit", command=sys.exit)
         self.textLabel.pack(side="top", expand=1)
-        self.exitSystemButton.pack()
         self.startReadNfc()
 
     def startReadNfc(self):
@@ -30,17 +30,18 @@ class Application(tk.Frame):
         cardID = fe.inputCard()
         if cardID == None:
             displayText = "対応していないカードです。"
-            self.openMessageDialog(displayText, buttonText="閉じる")
+            self.openMessageDialog(displayText=displayText, buttonText="閉じる")
             return
 
-        authInfo = nfJ.importJson()
-        if not cardID in authInfo:
+        authInfo = azsql.resolve_crew(card_hash=cardID)
+        if authInfo is None:
             displayText = "登録されていないカードです。別のカードを試してください。"
-            self.openMessageDialog(displayText, buttonText="閉じる")
+            self.openMessageDialog(displayText=displayText, buttonText="閉じる")
         else:
-            name = authInfo[cardID]
-            displayText = f"{name}さん。出退勤を選んでください。"
-            self.openSelectDialog(displayText, name)
+            name = authInfo["name"]
+            adminOrNot = authInfo["admin"]
+            displayText = f"{name}さん。{['出退勤','動作'][adminOrNot==1]}を選んでください。"
+            self.openSelectDialog(displayText=displayText, name=name, authInfo=authInfo)
         
 
     def openDialog(self):
@@ -58,21 +59,33 @@ class Application(tk.Frame):
         self.closeButton.pack(expand=1, fill="both", padx="30", pady="10")
 
         
-    def openSelectDialog(self, displayText, name):
-        self.openMessageDialog(displayText)
-        self.AttendButton = tk.Button(self.dialog, text="出勤", command=lambda: self.shukkin(name, "出勤"))
-        self.AbsentButton = tk.Button(self.dialog, text="退勤", command=lambda: self.shukkin(name, "退勤"))
+    def openSelectDialog(self, displayText, name, authInfo):
+        self.openMessageDialog(displayText=displayText, buttonText="キャンセル")
+        self.AttendButton = tk.Button(self.dialog, text="出勤", command=lambda: self.shukkin(name, "出勤", authInfo=authInfo))
+        self.AbsentButton = tk.Button(self.dialog, text="退勤", command=lambda: self.shukkin(name, "退勤", authInfo=authInfo))
         self.AttendButton.pack(expand=1, fill="both", padx="30", pady="10")
         self.AbsentButton.pack(expand=1, fill="both", padx="30", pady="10")
+        if authInfo["admin"] == 1:
+            self.finishButton = tk.Button(self.dialog, text="プログラム終了", command=sys.exit)
+            self.finishButton.pack(expand=1, fill="both", padx="30", pady="10")
 
     def destroyDialog(self):
         self.dialog.destroy()
         self.startReadNfc()
         self.master.grab_set_global()
 
-    def shukkin(self, name, select):
-        date, time = gsUpdate.addShuttaikin(workerName=name, attendance=select)
-        displayText = f"{name}さんの{select}を{date}{time}に登録しました。"
+    def shukkin(self, name, select, authInfo):
+        # 現在時刻を取得
+        dataNow = datetime.datetime.now(tz=timezone('Asia/Tokyo'))
+        datestr = f'{dataNow.year}-{dataNow.month:02d}-{dataNow.day:02d}'
+        timestr = f'{dataNow.hour:02d}:{dataNow.minute:02d}'
+        # 勤怠をクラウドストレージに登録する
+        azsql.shukkin(attendance=select, date_attend=f"{datestr} {timestr}", crew_data=authInfo)
+        thread2 = threading.Thread(target=gsUpdate.addShuttaikin(workerName=name,\
+                attendance=select, dataNow=dataNow, datestr=datestr, timestr=timestr))
+        thread2.start()
+        # 完了メッセージの表示
+        displayText = f"{name}さんの{select}を{datestr} {timestr}に登録しました。"
         self.dialog.destroy()
         self.openMessageDialog(displayText=displayText, buttonText="閉じる")
     

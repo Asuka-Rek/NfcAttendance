@@ -60,23 +60,23 @@ def createNewSheet(year, month):
     return newTitle
 
 
-def addShuttaikin(workerName, attendance):
+def addShuttaikin(workerName, attendance, dataNow ,datestr, timestr):
     """スプレッドシートに出退勤を追記する
-    
     Parameters
     ----------
     workerName : str
         出退勤者の名前
     attendance : str
         '出勤'または'退勤'
+    dataNow : datetime
+        現在時刻
+    datestr : str
+        dataNowの加工済みの日付データ。YYYY-MM-DD
+    timestr : str
+        dataNowの加工済み時刻データ。HH:MM
     """
-    dataNow = datetime.datetime.now(tz=timezone('Asia/Tokyo'))
-    datestr = f'{dataNow.year}-{dataNow.month:02d}-{dataNow.day:02d}'
-    timestr = f'{dataNow.hour:02d}:{dataNow.minute:02d}'
 
-    
     sheetTitle = createNewSheet(year=dataNow.year, month=dataNow.month)
     sheet2Add = gc.open(fileName).worksheet(sheetTitle)
     sheet2Add.append_row(values=[datestr, workerName, timestr, attendance])
-
-    return datestr, timestr
+    return
