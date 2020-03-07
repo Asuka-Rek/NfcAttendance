@@ -80,7 +80,9 @@ class Application(tk.Frame):
         timestr = f'{dataNow.hour:02d}:{dataNow.minute:02d}'
         # 勤怠をクラウドストレージに登録する
         azsql.shukkin(attendance=select, date_attend=f"{datestr} {timestr}", crew_data=authInfo)
-        gsUpdate.addShuttaikin(workerName=name, attendance=select, dataNow=dataNow, datestr=datestr, timestr=timestr)
+        thread2 = threading.Thread(target=gsUpdate.addShuttaikin(workerName=name,\
+                attendance=select, dataNow=dataNow, datestr=datestr, timestr=timestr))
+        thread2.start()
         # 完了メッセージの表示
         displayText = f"{name}さんの{select}を{datestr} {timestr}に登録しました。"
         self.dialog.destroy()
