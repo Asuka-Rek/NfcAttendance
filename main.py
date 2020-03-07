@@ -52,7 +52,6 @@ class Application(tk.Frame):
 
     def openMessageDialog(self, displayText, buttonText):
         self.openDialog()
-        overrider(self.dialog)
         self.textLabel = tk.Label(self.dialog, text=displayText)
         self.textLabel.pack(expand=1, fill="both", padx="30", pady="10")
         self.closeButton = tk.Button(self.dialog, text=buttonText, command=self.destroyDialog)
