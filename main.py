@@ -1,7 +1,9 @@
 from time import sleep
 import sys, platform, threading
 import tkinter as tk
-# ↓自作モジュール
+import datetime
+from pytz import timezone
+# private modules
 import gsUpdate
 import felicaidm as fe
 import nfcWithJson as nfJ
@@ -72,9 +74,15 @@ class Application(tk.Frame):
         self.master.grab_set_global()
 
     def shukkin(self, name, select, authInfo):
-        date, time = gsUpdate.addShuttaikin(workerName=name, attendance=select)
-        azsql.shukkin(attendance=select, date_attend=f"{date} {time}", crew_data=authInfo)
-        displayText = f"{name}さんの{select}を{date} {time}に登録しました。"
+        # 現在時刻を取得
+        dataNow = datetime.datetime.now(tz=timezone('Asia/Tokyo'))
+        datestr = f'{dataNow.year}-{dataNow.month:02d}-{dataNow.day:02d}'
+        timestr = f'{dataNow.hour:02d}:{dataNow.minute:02d}'
+        # 勤怠をクラウドストレージに登録する
+        azsql.shukkin(attendance=select, date_attend=f"{datestr} {timestr}", crew_data=authInfo)
+        gsUpdate.addShuttaikin(workerName=name, attendance=select, dataNow=dataNow, datestr=datestr, timestr=timestr)
+        # 完了メッセージの表示
+        displayText = f"{name}さんの{select}を{datestr} {timestr}に登録しました。"
         self.dialog.destroy()
         self.openMessageDialog(displayText=displayText, buttonText="閉じる")
     
