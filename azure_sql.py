@@ -30,19 +30,6 @@ def shukkin(attendance, date_attend, crew_data):
     print(r)
     print(r.text)
 
-def add_crew(name, birthday, tourokubi, card_hash):
-    payload = {
-    "name":name,
-    "birthday":birthday,
-    "tourokubi":tourokubi,
-    "card_hash":card_hash
-    }
-    url, headers = init_request("add_crew")
-    print("adding new crew...")
-    r = requests.post(url, data=json.dumps(payload), headers=headers)
-    print(r)
-    print(payload)
-
 def resolve_crew(card_hash):
     payload = {
     "card_hash":card_hash
