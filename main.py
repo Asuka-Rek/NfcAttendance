@@ -6,7 +6,6 @@ from pytz import timezone
 # private modules
 import gsUpdate
 import felicaidm as fe
-import nfcWithJson as nfJ
 import azure_sql as azsql
 
 class Application(tk.Frame):
