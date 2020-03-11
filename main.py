@@ -1,6 +1,7 @@
 from time import sleep
 import sys, platform, threading
 import tkinter as tk
+import tkinter.font as tkFont
 import datetime
 from pytz import timezone
 # private modules
@@ -16,7 +17,9 @@ class Application(tk.Frame):
         self.create_widgets()
         
     def create_widgets(self):
-        self.textLabel = tk.Label(text="カードをタッチしてください。")
+        self.fontStyle = tkFont.Font(family="System", size=70)
+        self.fontStyle2 = tkFont.Font(family="System", size=55)
+        self.textLabel = tk.Label(text="カードをタッチしてください。", font=self.fontStyle)
         self.textLabel.pack(side="top", expand=1)
         self.startReadNfc()
 
@@ -35,12 +38,12 @@ class Application(tk.Frame):
 
         authInfo = azsql.resolve_crew(card_hash=cardID)
         if authInfo is None:
-            displayText = "登録されていないカードです。別のカードを試してください。"
+            displayText = "登録されていないカードです。\n別のカードを試してください。"
             self.openMessageDialog(displayText=displayText, buttonText="閉じる")
         else:
             name = authInfo["name"]
             adminOrNot = authInfo["admin"]
-            displayText = f"{name}さん。{['出退勤','動作'][adminOrNot==1]}を選んでください。"
+            displayText = f"{name}さん。\n{['出退勤','動作'][adminOrNot==1]}を選んでください。"
             self.openSelectDialog(displayText=displayText, name=name, authInfo=authInfo)
         
 
@@ -52,20 +55,20 @@ class Application(tk.Frame):
 
     def openMessageDialog(self, displayText, buttonText):
         self.openDialog()
-        self.textLabel = tk.Label(self.dialog, text=displayText)
+        self.textLabel = tk.Label(self.dialog, text=displayText, font=self.fontStyle2)
         self.textLabel.pack(expand=1, fill="both", padx="30", pady="10")
-        self.closeButton = tk.Button(self.dialog, text=buttonText, command=self.destroyDialog)
+        self.closeButton = tk.Button(self.dialog, text=buttonText, command=self.destroyDialog, font=self.fontStyle)
         self.closeButton.pack(expand=1, fill="both", padx="30", pady="10")
 
         
     def openSelectDialog(self, displayText, name, authInfo):
         self.openMessageDialog(displayText=displayText, buttonText="キャンセル")
-        self.AttendButton = tk.Button(self.dialog, text="出勤", command=lambda: self.shukkin(name, "出勤", authInfo=authInfo))
-        self.AbsentButton = tk.Button(self.dialog, text="退勤", command=lambda: self.shukkin(name, "退勤", authInfo=authInfo))
+        self.AttendButton = tk.Button(self.dialog, text="出勤", command=lambda: self.shukkin(name, "出勤", authInfo=authInfo), font=self.fontStyle)
+        self.AbsentButton = tk.Button(self.dialog, text="退勤", command=lambda: self.shukkin(name, "退勤", authInfo=authInfo), font=self.fontStyle)
         self.AttendButton.pack(expand=1, fill="both", padx="30", pady="10")
         self.AbsentButton.pack(expand=1, fill="both", padx="30", pady="10")
         if authInfo["admin"] == 1:
-            self.finishButton = tk.Button(self.dialog, text="プログラム終了", command=sys.exit)
+            self.finishButton = tk.Button(self.dialog, text="プログラム終了", command=sys.exit, font=self.fontStyle)
             self.finishButton.pack(expand=1, fill="both", padx="30", pady="10")
 
     def destroyDialog(self):
@@ -84,7 +87,7 @@ class Application(tk.Frame):
                 attendance=select, dataNow=dataNow, datestr=datestr, timestr=timestr))
         thread2.start()
         # 完了メッセージの表示
-        displayText = f"{name}さんの{select}を{datestr} {timestr}に登録しました。"
+        displayText = f"{name}さんの\n{select}を{datestr} {timestr}に登録しました。"
         self.dialog.destroy()
         self.openMessageDialog(displayText=displayText, buttonText="閉じる")
     
